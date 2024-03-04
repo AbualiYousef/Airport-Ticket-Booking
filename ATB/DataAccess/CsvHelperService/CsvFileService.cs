@@ -19,7 +19,7 @@ public class CsvFileService<T> : ICsvFileService<T>
         return Task.FromResult(records);;
     }
     
-    public async Task WriteToCsvAsync(string filePath, List<T> records)
+    public async Task WriteToCsvAsync(string filePath, IEnumerable<T> records)
     {
         await using var writer = new StreamWriter(filePath);
         await using var csv = new CsvWriter(writer, _config);

@@ -35,9 +35,9 @@ public class BookingSearchCriteria
             DepartureAirport == null || booking.Flight.DepartureAirport.Equals(DepartureAirport);
         var arrivalAirportMatches = ArrivalAirport == null || booking.Flight.ArrivalAirport.Equals(ArrivalAirport);
         var priceMatches = Price == null ||
-                           booking.Flight.ClassDetails.First(details => details.Class == booking.Class).Price ==
+                           booking.Flight.ClassDetails.First(details => details.Class == booking.BookingClass).Price ==
                            Price;
-        var classMatches = Class == null || booking.Class == Class;
+        var classMatches = Class == null || booking.BookingClass == Class;
 
         return passengerIdMatches &&
                flightIdMatches &&

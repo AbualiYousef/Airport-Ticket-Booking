@@ -10,7 +10,7 @@ public class Booking
   
     public Flight Flight { get; set; }
   
-    public FlightClass Class { get; set; }
+    public FlightClass BookingClass { get; set; }
   
     public DateTime BookingDate { get; set; }
     
