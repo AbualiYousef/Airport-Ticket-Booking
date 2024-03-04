@@ -1,6 +1,7 @@
 using DataAccess.Enums;
 using DataAccess.Models;
 
+
 public class Booking
 {
     public int Id { get; set; }
