@@ -4,7 +4,7 @@ namespace BusinessLogic.DTOs;
 
 public class FlightDto(Flight flight)
 {
-    public int Id { get; init; } = flight.Id;
+    public Guid Id { get; init; } = flight.Id;
     public string DepartureCountry { get; init; } = flight.DepartureCountry;
 
     public string DestinationCountry { get; init; } = flight.DestinationCountry;

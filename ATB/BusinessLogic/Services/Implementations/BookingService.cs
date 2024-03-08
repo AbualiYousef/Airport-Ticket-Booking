@@ -13,13 +13,13 @@ public class BookingService(
     IPassengerRepository passengerRepository)
     : IBookingService
 {
-    public async Task<BookingDto?> GetByIdAsync(int id)
+    public async Task<BookingDto?> GetByIdAsync(Guid id)
     {
         var booking = await bookingRepository.GetByIdAsync(id);
         return booking is null ? null : new BookingDto(booking);
     }
 
-    public async Task BookFlight(int flightId, int passengerId, FlightClass flightClass)
+    public async Task BookFlight(Guid flightId, Guid passengerId, FlightClass flightClass)
     {
         var flight = await flightRepository.GetByIdAsync(flightId);
         if (flight == null)
@@ -41,7 +41,7 @@ public class BookingService(
         var bookings = bookingRepository.GetAllAsync();
         var newBooking = new Booking
         {
-            Id = bookings.Result.Count() + 1,
+            Id = Guid.NewGuid(),
             Passenger = passenger,
             Flight = flight,
             BookingClass = flightClass,
@@ -63,7 +63,7 @@ public class BookingService(
         return capacity - bookedSeats > 0;
     }
 
-    public async Task CancelBooking(int bookingId)
+    public async Task CancelBooking(Guid bookingId)
     {
         var booking = await bookingRepository.GetByIdAsync(bookingId);
         if (booking == null)
@@ -74,7 +74,7 @@ public class BookingService(
         await bookingRepository.DeleteAsync(booking);
     }
 
-    public async Task ModifyBooking(int bookingId, FlightClass newClass)
+    public async Task ModifyBooking(Guid bookingId, FlightClass newClass)
     {
         var booking = await bookingRepository.GetByIdAsync(bookingId);
         if (booking == null)
@@ -96,7 +96,7 @@ public class BookingService(
         await bookingRepository.UpdateAsync(booking);
     }
 
-    public async Task<IEnumerable<BookingDto>> GetPassengerBookingsAsync(int passengerId)
+    public async Task<IEnumerable<BookingDto>> GetPassengerBookingsAsync(Guid passengerId)
     {
         var bookings = await bookingRepository.GetPassengerBookingsAsync(passengerId);
         return bookings.Select(b => new BookingDto(b));

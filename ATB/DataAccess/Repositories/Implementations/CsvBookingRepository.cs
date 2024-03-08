@@ -34,7 +34,7 @@ public class CsvBookingRepository : IBookingRepository
         return _bookingsCache;
     }
 
-    public async Task<Booking?> GetByIdAsync(int id)
+    public async Task<Booking?> GetByIdAsync(Guid id)
     {
         await InitializeCacheAsync();
         return _bookingsCache.FirstOrDefault(b => b.Id == id);
@@ -65,13 +65,13 @@ public class CsvBookingRepository : IBookingRepository
         await _csvFileService.WriteToCsvAsync(_pathToCsv, _bookingsCache);
     }
 
-    public async Task<IEnumerable<Booking>> GetPassengerBookingsAsync(int passengerId)
+    public async Task<IEnumerable<Booking>> GetPassengerBookingsAsync(Guid passengerId)
     {
         await InitializeCacheAsync();
         return _bookingsCache.Where(b => b.Passenger.Id == passengerId);
     }
 
-    public async Task<IEnumerable<Booking>> GetBookingsForFlightWithClassAsync(int flightId, FlightClass flightClass)
+    public async Task<IEnumerable<Booking>> GetBookingsForFlightWithClassAsync(Guid flightId, FlightClass flightClass)
     {
         await InitializeCacheAsync();
         return _bookingsCache.Where(b => b.Flight.Id == flightId && b.BookingClass == flightClass);

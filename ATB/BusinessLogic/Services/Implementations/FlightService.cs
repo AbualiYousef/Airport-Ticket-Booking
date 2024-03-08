@@ -22,7 +22,7 @@ public class FlightService : IFlightService
     }
 
 
-    public async Task<FlightDto> GetByIdAsync(int id)
+    public async Task<FlightDto> GetByIdAsync(Guid id)
     {
         var flight = await _flightRepository.GetByIdAsync(id);
         if (flight == null)

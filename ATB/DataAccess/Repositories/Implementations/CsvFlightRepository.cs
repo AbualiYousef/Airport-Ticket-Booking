@@ -31,7 +31,7 @@ public class CsvFlightRepository(ICsvFileService<Flight> csvFileService, string 
         return _flightsCache.Where(criteria.Matches);
     }
 
-    public async Task<Flight?> GetByIdAsync(int id)
+    public async Task<Flight?> GetByIdAsync(Guid id)
     {
         await InitializeCacheAsync();
         return _flightsCache.FirstOrDefault(f => f.Id == id);

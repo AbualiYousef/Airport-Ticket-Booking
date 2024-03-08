@@ -2,7 +2,7 @@ namespace DataAccess.Models;
 
 public class Flight 
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     public string DepartureCountry { get; set; }
 

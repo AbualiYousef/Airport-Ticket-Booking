@@ -9,7 +9,7 @@ public interface IFlightRepository
 
     Task<IEnumerable<Flight>> GetMatchingCriteriaAsync(FlightSearchCriteria criteria);
 
-    Task<Flight?> GetByIdAsync(int id);
+    Task<Flight?> GetByIdAsync(Guid id);
     
     Task AddAsync(IEnumerable<Flight> flights);
 } //End of IFlightRepository interface

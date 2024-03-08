@@ -6,10 +6,10 @@ namespace BusinessLogic.Services.Interfaces;
 
 public interface IBookingService
 {
-    Task<BookingDto?> GetByIdAsync(int id);
-    Task BookFlight(int flightId, int passengerId, FlightClass flightClass);
-    Task CancelBooking(int bookingId);
-    Task ModifyBooking(int bookingId, FlightClass newClass);
-    Task<IEnumerable<BookingDto>> GetPassengerBookingsAsync(int passengerId);
+    Task<BookingDto?> GetByIdAsync(Guid id);
+    Task BookFlight(Guid flightId, Guid passengerId, FlightClass flightClass);
+    Task CancelBooking(Guid bookingId);
+    Task ModifyBooking(Guid bookingId, FlightClass newClass);
+    Task<IEnumerable<BookingDto>> GetPassengerBookingsAsync(Guid passengerId);
     Task<IEnumerable<BookingDto>> GetMatchingCriteriaAsync(BookingSearchCriteria criteria);
 }

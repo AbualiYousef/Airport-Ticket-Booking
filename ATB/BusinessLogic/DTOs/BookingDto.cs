@@ -4,7 +4,7 @@ namespace BusinessLogic.DTOs;
 
 public class BookingDto(Booking booking)
 {
-    public int Id { get; init; } = booking.Id;
+    public Guid Id { get; init; } = booking.Id;
 
     public PassengerDto Passenger { get; init; } = new(booking.Passenger);
 

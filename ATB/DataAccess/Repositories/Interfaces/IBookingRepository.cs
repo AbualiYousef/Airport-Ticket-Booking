@@ -7,7 +7,7 @@ public interface IBookingRepository
 {
     Task<IEnumerable<Booking>> GetAllAsync();
 
-    Task<Booking?> GetByIdAsync(int id);
+    Task<Booking?> GetByIdAsync(Guid id);
 
     Task AddAsync(Booking booking);
 
@@ -15,9 +15,9 @@ public interface IBookingRepository
 
     Task DeleteAsync(Booking booking);
 
-    Task<IEnumerable<Booking>> GetPassengerBookingsAsync(int passengerId);
+    Task<IEnumerable<Booking>> GetPassengerBookingsAsync(Guid passengerId);
 
-    Task<IEnumerable<Booking>> GetBookingsForFlightWithClassAsync(int flightId, FlightClass flightClass);
+    Task<IEnumerable<Booking>> GetBookingsForFlightWithClassAsync(Guid flightId, FlightClass flightClass);
 
     Task<IEnumerable<Booking>> GetMatchingCriteriaAsync(BookingSearchCriteria criteria);
 } //End of IBookingRepository interface

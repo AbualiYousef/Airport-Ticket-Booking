@@ -4,9 +4,9 @@ namespace DataAccess.SearchCriteria;
 
 public class BookingSearchCriteria
 {
-    public int? PassengerId { get; set; }
+    public Guid? PassengerId { get; set; }
 
-    public int? FlightId { get; set; }
+    public Guid? FlightId { get; set; }
 
     public decimal? Price { get; set; }
 

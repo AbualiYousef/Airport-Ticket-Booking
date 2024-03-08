@@ -4,7 +4,7 @@ using DataAccess.Models;
 
 public class Booking
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     public Passenger Passenger { get; set; }
   

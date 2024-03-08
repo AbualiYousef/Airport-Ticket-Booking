@@ -4,5 +4,5 @@ namespace BusinessLogic.Services.Interfaces;
 
 public interface IPassengerService
 {
-    Task<PassengerDto?> GetById(int id);
+    Task<PassengerDto?> GetById(Guid id);
 }
