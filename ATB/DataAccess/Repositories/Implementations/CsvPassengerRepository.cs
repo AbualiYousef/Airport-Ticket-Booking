@@ -16,7 +16,7 @@ public class CsvPassengerRepository : IPassengerRepository
         _pathToCsv = pathToCsv;
     }
 
-    public async Task<Passenger?> GetById(int id)
+    public async Task<Passenger?> GetByIdAsync(int id)
     {
         var passengers = await _csvFileService.ReadFromCsvAsync(_pathToCsv);
         return passengers.FirstOrDefault(p => p.Id == id);

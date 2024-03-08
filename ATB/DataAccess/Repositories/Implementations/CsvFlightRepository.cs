@@ -5,24 +5,16 @@ using DataAccess.SearchCriteria;
 
 namespace DataAccess.Repositories.Implementations;
 
-public class CsvIFlightRepository : IFlightRepository
+public class CsvFlightRepository(ICsvFileService<Flight> csvFileService, string pathToCsv) : IFlightRepository
 {
-    private readonly string _pathToCsv;
-    private readonly ICsvFileService<Flight> _csvFileService;
-    private List<Flight> _flightsCache;
+    private List<Flight> _flightsCache = null!;
     private bool _isCacheInitialized = false;
-
-    public CsvIFlightRepository(ICsvFileService<Flight> csvFileService, string pathToCsv)
-    {
-        _csvFileService = csvFileService;
-        _pathToCsv = pathToCsv;
-    }
 
     private async Task InitializeCacheAsync()
     {
         if (!_isCacheInitialized)
         {
-            _flightsCache = await _csvFileService.ReadFromCsvAsync(_pathToCsv);
+            _flightsCache = await csvFileService.ReadFromCsvAsync(pathToCsv);
             _isCacheInitialized = true;
         }
     }
@@ -49,6 +41,6 @@ public class CsvIFlightRepository : IFlightRepository
     {
         await InitializeCacheAsync();
         _flightsCache.AddRange(flights);
-        await _csvFileService.WriteToCsvAsync(_pathToCsv, _flightsCache);
+        await csvFileService.WriteToCsvAsync(pathToCsv, _flightsCache);
     }
 } //End of CsvIFlightRepository class

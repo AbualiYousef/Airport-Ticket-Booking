@@ -4,5 +4,5 @@ namespace DataAccess.Repositories.Interfaces;
 
 public interface IPassengerRepository
 {
-    Task<Passenger?> GetById(int id);
+    Task<Passenger?> GetByIdAsync(int id);
 }
