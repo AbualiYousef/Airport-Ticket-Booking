@@ -8,6 +8,5 @@ public interface IFlightService
     Task<FlightDto> GetByIdAsync(Guid id);
     Task<IEnumerable<FlightDto>> GetAllAsync();
     Task<IEnumerable<FlightDto>> GetMatchingCriteriaAsync(FlightSearchCriteria criteria);
-    // Task<string> ImportFlightsFromCsvAsync(string pathToCsv);
-    
+    Task<List<string>> ImportFlightsFromCsvAsync(string filePath);
 }
