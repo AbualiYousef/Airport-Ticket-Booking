@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <Folder Include="CsvFiles\" />
+      <Folder Include="Validation\ValidationAttributes\" />
     </ItemGroup>
 
 </Project>
