@@ -1,0 +1,2 @@
+BookingId,Id,Name,Email,PhoneNumber,PassportNumber,Id,DepartureCountry,DestinationCountry,DepartureDate,DepartureAirport,ArrivalAirport,BookingClass,BookingDate
+990c96dc-4751-45d6-915a-2f6c9ae980ec,8dfbdeb1-ba9a-489a-b25a-ea5b5cc5ebc0,Yousef,yousef@test.com,0597654321,TS-6567966,b59c67bf-3d3e-4a15-aecb-388e6e5e6d91,USA,Canada,05/15/2024 17:30:00,JFK,YVR,Economy,03/11/2024 22:50:49
