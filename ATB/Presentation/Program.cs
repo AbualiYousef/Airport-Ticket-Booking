@@ -1,11 +1,13 @@
-﻿using DataAccess.CsvHelperService;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Presentation;
 
-namespace Presentation;
+var serviceProvider = new ServiceCollection()
+    .AddServices()
+    .AddDataAccess()
+    .AddScoped<AirportBookingSystem>();
 
-class Program
-{
-    static void Main(string[] args)
-    {
-        
-    }
-}
+var app = serviceProvider
+    .BuildServiceProvider()
+    .GetRequiredService<AirportBookingSystem>();
+
+await app.RunMainMenu();
