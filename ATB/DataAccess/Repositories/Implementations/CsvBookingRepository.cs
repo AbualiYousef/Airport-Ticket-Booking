@@ -68,7 +68,7 @@ public class CsvBookingRepository : IBookingRepository
     public async Task<IEnumerable<Booking>> GetPassengerBookingsAsync(Guid passengerId)
     {
         await InitializeCacheAsync();
-        return _bookingsCache.Where(b => b.Passenger.Id == passengerId);
+        return _bookingsCache.Where(booking => booking.Passenger.Id == passengerId);
     }
 
     public async Task<IEnumerable<Booking>> GetBookingsForFlightWithClassAsync(Guid flightId, FlightClass flightClass)
@@ -82,4 +82,4 @@ public class CsvBookingRepository : IBookingRepository
         await InitializeCacheAsync();
         return _bookingsCache.Where(criteria.Matches);
     }
-}//End of CsvBookingRepository class
+} //End of CsvBookingRepository class

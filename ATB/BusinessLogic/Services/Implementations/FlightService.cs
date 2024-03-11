@@ -9,26 +9,15 @@ using DataAccess.Validation;
 
 namespace BusinessLogic.Services.Implementations;
 
-public class FlightService : IFlightService
+public class FlightService(
+    IFlightRepository flightRepository,
+    IBookingRepository bookingRepository,
+    ICsvFileService<Flight> csvFileService)
+    : IFlightService
 {
-    private readonly IFlightRepository _flightRepository;
-
-    private readonly IBookingRepository _bookingRepository;
-
-    private readonly ICsvFileService<Flight> _csvFileService;
-
-    public FlightService(IFlightRepository flightRepository, IBookingRepository bookingRepository,
-        ICsvFileService<Flight> csvFileService)
-    {
-        _flightRepository = flightRepository;
-        _bookingRepository = bookingRepository;
-        _csvFileService = csvFileService;
-    }
-
-
     public async Task<FlightDto> GetByIdAsync(Guid id)
     {
-        var flight = await _flightRepository.GetByIdAsync(id);
+        var flight = await flightRepository.GetByIdAsync(id);
         if (flight == null)
         {
             throw new ArgumentException($"Flight with id {id} not found");
@@ -39,31 +28,31 @@ public class FlightService : IFlightService
 
     public async Task<IEnumerable<FlightDto>> GetAllAsync()
     {
-        var flights = await _flightRepository.GetAllAsync();
+        var flights = await flightRepository.GetAllAsync();
         return flights.Select(f => new FlightDto(f));
     }
 
-    public async Task<IEnumerable<FlightDto>> GetMatchingCriteriaAsync(FlightSearchCriteria criteria)
+    public async Task<IEnumerable<FlightDto>> GetAvailableFlightsMatchingCriteria(FlightSearchCriteria criteria)
     {
         var flightsMatchingCriteria =
-            await _flightRepository.GetMatchingCriteriaAsync(criteria);
+            await flightRepository.GetMatchingCriteriaAsync(criteria);
 
         if (criteria.Class is null)
         {
             return flightsMatchingCriteria
                 .Where(f => f
-                    .ClassDetails.Exists(d => IsClassAvailableToBook(f, d.Class).Result))
+                    .ClassDetails.Exists(d => IsClassAvailableToBook(f, d.Class)))
                 .Select(flight => new FlightDto(flight));
         }
 
         return flightsMatchingCriteria
-            .Where(f => IsClassAvailableToBook(f, criteria.Class.Value).Result)
+            .Where(f => IsClassAvailableToBook(f, criteria.Class.Value))
             .Select(flight => new FlightDto(flight));
     }
 
     public async Task<List<string>> ImportFlightsFromCsvAsync(string filePath)
     {
-        var flights = await _csvFileService.ReadFromCsvAsync(filePath);
+        var flights = await csvFileService.ReadFromCsvAsync(filePath);
         var flightValidator = new ModelValidator<Flight>();
         var validationErrors = new List<string>();
         var validFlights = new List<Flight>();
@@ -71,7 +60,7 @@ public class FlightService : IFlightService
         foreach (var flight in flights)
         {
             var errors = flightValidator.Validate(flight);
-            if (errors.Any())
+            if (errors.Count != 0)
             {
                 validationErrors.AddRange(errors);
             }
@@ -81,24 +70,30 @@ public class FlightService : IFlightService
             }
         }
 
-        if (validFlights.Any())
+        if (validFlights.Count != 0)
         {
-            await _flightRepository.AddAsync(validFlights);
+            await flightRepository.AddAsync(validFlights);
         }
 
         return validationErrors;
     }
 
-    private async Task<bool> IsClassAvailableToBook(Flight bookingFlight, FlightClass newClass)
+    private bool IsClassAvailableToBook(Flight bookingFlight, FlightClass newClass)
     {
-        var capacity = bookingFlight
+        var classDetail = bookingFlight
             .ClassDetails
-            .First(details => details.Class == newClass)
-            .Capacity;
+            .FirstOrDefault(details => details.Class == newClass);
 
-        var bookedSeats = (await _bookingRepository
-                .GetBookingsForFlightWithClassAsync(bookingFlight.Id, newClass))
-            .Count();
+        if (classDetail == null)
+        {
+            return false;
+        }
+
+        var capacity = classDetail.Capacity;
+
+        var bookings = bookingRepository.GetBookingsForFlightWithClassAsync(bookingFlight.Id, newClass).Result;
+
+        var bookedSeats = bookings.Count();
 
         return capacity - bookedSeats > 0;
     }

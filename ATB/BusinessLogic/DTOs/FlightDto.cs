@@ -16,8 +16,10 @@ public class FlightDto(Flight flight)
     public string ArrivalAirport { get; init; } = flight.ArrivalAirport;
 
     public IList<FlightClassDetailsDto> ClassDetails { get; init; }
-        = flight.ClassDetails
-            .Select(details => new FlightClassDetailsDto(details)).ToList();
+        = flight
+            .ClassDetails
+            .Select(details => new FlightClassDetailsDto(details))
+            .ToList();
 
 
     public override string ToString()

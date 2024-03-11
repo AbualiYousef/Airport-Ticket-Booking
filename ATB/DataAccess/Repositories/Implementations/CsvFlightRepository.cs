@@ -28,6 +28,9 @@ public class CsvFlightRepository(ICsvFileService<Flight> csvFileService, string 
     public async Task<IEnumerable<Flight>> GetMatchingCriteriaAsync(FlightSearchCriteria criteria)
     {
         await InitializeCacheAsync();
+        Console.WriteLine(_flightsCache.Count);
+        Console.WriteLine(_flightsCache.Where(criteria.Matches).Count());
+
         return _flightsCache.Where(criteria.Matches);
     }
 

@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using DataAccess.Enums;
 
+namespace DataAccess.Models;
+
 public class FlightClassDetails
 {
     [Required(ErrorMessage = "Flight class is required")]
