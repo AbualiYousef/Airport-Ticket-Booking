@@ -15,4 +15,4 @@ public class FlightClassDetails
     [Required(ErrorMessage = "Capacity is required")]
     [Range(0, 1000, ErrorMessage = "Capacity must be between 0 and 1000")]
     public int Capacity { get; set; }
-} //End of FlightClassDetails class
+} 

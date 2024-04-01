@@ -1,11 +1,12 @@
 using DataAccess.Enums;
+using DataAccess.Models;
 using DataAccess.SearchCriteria;
 
 namespace DataAccess.Repositories.Interfaces;
 
 public interface IBookingRepository
 {
-    Task<IEnumerable<Booking>> GetAllAsync();
+    Task<List<Booking>> GetAllAsync();
 
     Task<Booking?> GetByIdAsync(Guid id);
 
@@ -15,9 +16,9 @@ public interface IBookingRepository
 
     Task DeleteAsync(Booking booking);
 
-    Task<IEnumerable<Booking>> GetPassengerBookingsAsync(Guid passengerId);
+    Task<List<Booking>> GetPassengerBookingsAsync(Guid passengerId);
 
-    Task<IEnumerable<Booking>> GetBookingsForFlightWithClassAsync(Guid flightId, FlightClass flightClass);
+    Task<List<Booking>> GetBookingsForFlightWithClassAsync(Guid flightId, FlightClass flightClass);
 
-    Task<IEnumerable<Booking>> GetMatchingCriteriaAsync(BookingSearchCriteria criteria);
-} //End of IBookingRepository interface
+    Task<List<Booking>> GetMatchingCriteriaAsync(BookingSearchCriteria criteria);
+} 

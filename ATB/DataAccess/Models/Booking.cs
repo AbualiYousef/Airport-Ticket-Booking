@@ -1,12 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using CsvHelper.Configuration.Attributes;
 using DataAccess.Enums;
-using DataAccess.Models;
 
+namespace DataAccess.Models;
 
 public class Booking
 {
-    [Name("BookingId")] public Guid Id { get; set; }
+    [Name("BookingId")] 
+    public Guid Id { get; set; }
 
     [Name("PassengerId")]
     [Required(ErrorMessage = "Passenger information is required")]
@@ -25,4 +26,4 @@ public class Booking
         ErrorMessage = "Booking date must be between today and one year from now")]
     [Name("BookingDate")]
     public DateTime BookingDate { get; set; }
-} //End of Booking class
+} 

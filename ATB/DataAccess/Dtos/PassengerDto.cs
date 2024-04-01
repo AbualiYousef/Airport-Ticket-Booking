@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace DataAccess.Dtos;
 
 public class PassengerDto
@@ -13,4 +11,4 @@ public class PassengerDto
     public string PhoneNumber { get; set; }
 
     public string PassportNumber { get; set; }
-} //End of PassengerDto 
+}

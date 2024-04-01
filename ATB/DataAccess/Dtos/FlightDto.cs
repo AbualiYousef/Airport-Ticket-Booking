@@ -16,4 +16,4 @@ public class FlightDto
     public string ArrivalAirport { get; set; }
 
     public List<FlightClassDetailsDto> ClassDetails { get; set; }
-} //End of FlightDto class
+}

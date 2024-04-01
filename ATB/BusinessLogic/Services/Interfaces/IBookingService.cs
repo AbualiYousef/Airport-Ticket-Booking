@@ -10,6 +10,6 @@ public interface IBookingService
     Task BookFlight(Guid flightId, Guid passengerId, FlightClass flightClass);
     Task CancelBooking(Guid bookingId);
     Task ModifyBooking(Guid bookingId, FlightClass newClass);
-    Task<IEnumerable<BookingDto>> GetPassengerBookingsAsync(Guid passengerId);
-    Task<IEnumerable<BookingDto>> GetMatchingCriteriaAsync(BookingSearchCriteria criteria);
+    Task<List<BookingDto>> GetPassengerBookingsAsync(Guid passengerId);
+    Task<List<BookingDto>> GetMatchingCriteriaAsync(BookingSearchCriteria criteria);
 }

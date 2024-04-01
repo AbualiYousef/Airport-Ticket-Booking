@@ -2,48 +2,61 @@ using DataAccess.CsvHelperService;
 using DataAccess.Models;
 using DataAccess.Repositories.Interfaces;
 using DataAccess.SearchCriteria;
+using System.Collections.Concurrent;
 
 namespace DataAccess.Repositories.Implementations;
 
-public class CsvFlightRepository(ICsvFileService<Flight> csvFileService, string pathToCsv) : IFlightRepository
+public class CsvFlightRepository : IFlightRepository
 {
-    private List<Flight> _flightsCache = null!;
-    private bool _isCacheInitialized = false;
+    private readonly string _pathToCsv;
+    private readonly ICsvFileService<Flight> _csvFileService;
+    private ConcurrentDictionary<Guid, Flight> _flightsCache;
+    public CsvFlightRepository(ICsvFileService<Flight> csvFileService, string pathToCsv)
+    {
+        _csvFileService = csvFileService;
+        _pathToCsv = pathToCsv;
+    }
+    public static async Task<CsvFlightRepository> CreateAsync(ICsvFileService<Flight> csvFileService, string pathToCsv)
+    {
+        var repository = new CsvFlightRepository(csvFileService, pathToCsv);
+        await repository.InitializeCacheAsync();
+        return repository;
+    }
 
     private async Task InitializeCacheAsync()
     {
-        if (!_isCacheInitialized)
-        {
-            _flightsCache = await csvFileService.ReadFromCsvAsync(pathToCsv);
-            _isCacheInitialized = true;
-        }
+        var flights = await _csvFileService.ReadFromCsvAsync(_pathToCsv);
+        _flightsCache = new ConcurrentDictionary<Guid, Flight>(flights.ToDictionary(f => f.Id));
     }
 
-    public async Task<IEnumerable<Flight>> GetAllAsync()
+    public Task<List<Flight>> GetAllAsync()
     {
-        await InitializeCacheAsync();
-        return _flightsCache;
+        return Task.FromResult(_flightsCache.Values.ToList());
     }
 
-    public async Task<IEnumerable<Flight>> GetMatchingCriteriaAsync(FlightSearchCriteria criteria)
+    public Task<Flight?> GetByIdAsync(Guid id)
     {
-        await InitializeCacheAsync();
-        Console.WriteLine(_flightsCache.Count);
-        Console.WriteLine(_flightsCache.Where(criteria.Matches).Count());
-
-        return _flightsCache.Where(criteria.Matches);
-    }
-
-    public async Task<Flight?> GetByIdAsync(Guid id)
-    {
-        await InitializeCacheAsync();
-        return _flightsCache.FirstOrDefault(f => f.Id == id);
+        _flightsCache.TryGetValue(id, out var flight);
+        return Task.FromResult(flight);
     }
 
     public async Task AddAsync(IEnumerable<Flight> flights)
     {
-        await InitializeCacheAsync();
-        _flightsCache.AddRange(flights);
-        await csvFileService.WriteToCsvAsync(pathToCsv, _flightsCache);
+        var flightsList = flights.ToList();
+        // Ensure atomicity by writing to the CSV before updating the cache.
+        var updatedFlights = _flightsCache.Values.ToList();
+        updatedFlights.AddRange(flightsList);
+        await _csvFileService.WriteToCsvAsync(_pathToCsv, updatedFlights);
+
+        foreach (var flight in flightsList)
+        {
+            _flightsCache.TryAdd(flight.Id, flight);
+        }
     }
-} //End of CsvIFlightRepository class
+
+    public Task<List<Flight>> GetMatchingCriteriaAsync(FlightSearchCriteria criteria)
+    {
+        var matchingFlights = _flightsCache.Values.Where(criteria.Matches).ToList();
+        return Task.FromResult(matchingFlights);
+    }
+}

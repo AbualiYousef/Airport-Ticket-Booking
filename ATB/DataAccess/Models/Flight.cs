@@ -30,4 +30,4 @@ public class Flight
 
     [Required(ErrorMessage = "Class details are required")]
     public List<FlightClassDetails> ClassDetails { get; set; }
-} //End of Flight class
+}

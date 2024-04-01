@@ -1,4 +1,5 @@
 using DataAccess.Enums;
+using DataAccess.Models;
 
 namespace DataAccess.SearchCriteria;
 
@@ -49,4 +50,4 @@ public class BookingSearchCriteria
                priceMatches &&
                classMatches;
     }
-} //End of BookingSearchCriteria class
+} 

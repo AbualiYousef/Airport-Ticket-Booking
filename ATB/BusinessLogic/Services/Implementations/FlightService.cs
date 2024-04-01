@@ -26,13 +26,13 @@ public class FlightService(
         return new FlightDto(flight);
     }
 
-    public async Task<IEnumerable<FlightDto>> GetAllAsync()
+    public async Task<List<FlightDto>> GetAllAsync()
     {
         var flights = await flightRepository.GetAllAsync();
-        return flights.Select(f => new FlightDto(f));
+        return flights.Select(flight => new FlightDto(flight)).ToList();
     }
 
-    public async Task<IEnumerable<FlightDto>> GetAvailableFlightsMatchingCriteria(FlightSearchCriteria criteria)
+    public async Task<List<FlightDto>> GetAvailableFlightsMatchingCriteria(FlightSearchCriteria criteria)
     {
         var flightsMatchingCriteria =
             await flightRepository.GetMatchingCriteriaAsync(criteria);
@@ -42,12 +42,14 @@ public class FlightService(
             return flightsMatchingCriteria
                 .Where(f => f
                     .ClassDetails.Exists(d => IsClassAvailableToBook(f, d.Class)))
-                .Select(flight => new FlightDto(flight));
+                .Select(flight => new FlightDto(flight))
+                .ToList();
         }
 
         return flightsMatchingCriteria
             .Where(f => IsClassAvailableToBook(f, criteria.Class.Value))
-            .Select(flight => new FlightDto(flight));
+            .Select(flight => new FlightDto(flight))
+            .ToList();
     }
 
     public async Task<List<string>> ImportFlightsFromCsvAsync(string filePath)

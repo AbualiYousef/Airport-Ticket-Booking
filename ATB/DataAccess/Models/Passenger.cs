@@ -23,4 +23,4 @@ public class Passenger
     [Required(ErrorMessage = "Passport number is required")]
     [RegularExpression(@"^[A-Z0-9]{6,9}$", ErrorMessage = "Invalid passport number format")]
     public string PassportNumber { get; set; }
-} //End of Passenger class
+} 

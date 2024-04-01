@@ -3,6 +3,7 @@ using DataAccess.Enums;
 using DataAccess.Models;
 using DataAccess.Repositories.Interfaces;
 using DataAccess.SearchCriteria;
+using System.Collections.Concurrent;
 
 namespace DataAccess.Repositories.Implementations;
 
@@ -10,8 +11,7 @@ public class CsvBookingRepository : IBookingRepository
 {
     private readonly string _pathToCsv;
     private readonly ICsvFileService<Booking> _csvFileService;
-    private List<Booking> _bookingsCache;
-    private bool _isCacheInitialized = false;
+    private ConcurrentDictionary<Guid, Booking> _bookingsCache;
 
     public CsvBookingRepository(ICsvFileService<Booking> csvFileService, string pathToCsv)
     {
@@ -19,67 +19,80 @@ public class CsvBookingRepository : IBookingRepository
         _pathToCsv = pathToCsv;
     }
 
-    private async Task InitializeCacheAsync()
+    public static async Task<CsvBookingRepository> CreateAsync(ICsvFileService<Booking> csvFileService,
+        string pathToCsv)
     {
-        if (!_isCacheInitialized)
-        {
-            _bookingsCache = await _csvFileService.ReadFromCsvAsync(_pathToCsv);
-            _isCacheInitialized = true;
-        }
+        var repository = new CsvBookingRepository(csvFileService, pathToCsv);
+        await repository.InitializeCacheAsync();
+        return repository;
     }
 
-    public async Task<IEnumerable<Booking>> GetAllAsync()
+    private async Task InitializeCacheAsync()
     {
-        await InitializeCacheAsync();
-        return _bookingsCache;
+        var bookings = await _csvFileService.ReadFromCsvAsync(_pathToCsv);
+        _bookingsCache = new ConcurrentDictionary<Guid, Booking>(bookings.ToDictionary(b => b.Id));
+    }
+
+    public async Task<List<Booking>> GetAllAsync()
+    {
+        return await Task.FromResult(_bookingsCache.Values.ToList());
     }
 
     public async Task<Booking?> GetByIdAsync(Guid id)
     {
-        await InitializeCacheAsync();
-        return _bookingsCache.FirstOrDefault(b => b.Id == id);
+        _bookingsCache.TryGetValue(id, out var booking);
+        return await Task.FromResult(booking);
     }
 
     public async Task AddAsync(Booking booking)
     {
-        await InitializeCacheAsync();
-        _bookingsCache.Add(booking);
-        await _csvFileService.WriteToCsvAsync(_pathToCsv, _bookingsCache);
+        var updatedBookings = _bookingsCache.Values.ToList();
+        updatedBookings.Add(booking);
+        await _csvFileService.WriteToCsvAsync(_pathToCsv, updatedBookings);
+        _bookingsCache.TryAdd(booking.Id, booking);
     }
 
     public async Task UpdateAsync(Booking booking)
     {
-        await InitializeCacheAsync();
-        var index = _bookingsCache.FindIndex(b => b.Id == booking.Id);
+        var updatedBookings = _bookingsCache.Values.ToList();
+        var index = updatedBookings.FindIndex(b => b.Id == booking.Id);
         if (index != -1)
         {
-            _bookingsCache[index] = booking;
-            await _csvFileService.WriteToCsvAsync(_pathToCsv, _bookingsCache);
+            updatedBookings[index] = booking;
+            await _csvFileService.WriteToCsvAsync(_pathToCsv, updatedBookings);
+            _bookingsCache[booking.Id] = booking;
         }
     }
 
     public async Task DeleteAsync(Booking booking)
     {
-        await InitializeCacheAsync();
-        _bookingsCache.RemoveAll(b => b.Id == booking.Id);
-        await _csvFileService.WriteToCsvAsync(_pathToCsv, _bookingsCache);
+        var updatedBookings = _bookingsCache.Values.ToList();
+        updatedBookings.RemoveAll(b => b.Id == booking.Id);
+        await _csvFileService.WriteToCsvAsync(_pathToCsv, updatedBookings);
+        _bookingsCache.TryRemove(booking.Id, out _);
     }
 
-    public async Task<IEnumerable<Booking>> GetPassengerBookingsAsync(Guid passengerId)
+    public async Task<List<Booking>> GetPassengerBookingsAsync(Guid passengerId)
     {
-        await InitializeCacheAsync();
-        return _bookingsCache.Where(booking => booking.Passenger.Id == passengerId);
+        var bookings =
+            _bookingsCache
+                .Values
+                .Where(booking => booking.Passenger.Id == passengerId).ToList();
+        return await Task.FromResult(bookings);
     }
 
-    public async Task<IEnumerable<Booking>> GetBookingsForFlightWithClassAsync(Guid flightId, FlightClass flightClass)
+    public async Task<List<Booking>> GetBookingsForFlightWithClassAsync(Guid flightId, FlightClass flightClass)
     {
-        await InitializeCacheAsync();
-        return _bookingsCache.Where(b => b.Flight.Id == flightId && b.BookingClass == flightClass);
+        var bookings =
+            _bookingsCache
+                .Values
+                .Where(b => b.Flight.Id == flightId && b.BookingClass == flightClass).ToList();
+        return await Task.FromResult(bookings);
     }
 
-    public async Task<IEnumerable<Booking>> GetMatchingCriteriaAsync(BookingSearchCriteria criteria)
+    public async Task<List<Booking>> GetMatchingCriteriaAsync(BookingSearchCriteria criteria)
     {
-        await InitializeCacheAsync();
-        return _bookingsCache.Where(criteria.Matches);
+        var bookings = _bookingsCache.Values.Where(criteria.Matches).ToList();
+        return await Task.FromResult(bookings);
     }
-} //End of CsvBookingRepository class
+}

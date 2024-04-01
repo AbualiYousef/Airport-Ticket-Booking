@@ -1,4 +1,3 @@
-using BusinessLogic.DTOs;
 using BusinessLogic.Services.Interfaces;
 using DataAccess.Enums;
 using DataAccess.SearchCriteria;
@@ -163,13 +162,12 @@ public class AirportBookingSystem(
                 foreach (var flight in flightDtos)
                 {
                     Console.WriteLine(
-                        "Hello"
-                        // $"Flight ID: {flight.Id}," +
-                        // $" Departure Country: {flight.DepartureCountry}," +
-                        // $" Destination Country: {flight.DestinationCountry}," +
-                        // $" Departure Date: {flight.DepartureDate}," +
-                        // $" Departure Airport: {flight.DepartureAirport}," +
-                        // $" Arrival Airport: {flight.ArrivalAirport}"
+                        $"Flight ID: {flight.Id}," +
+                        $" Departure Country: {flight.DepartureCountry}," +
+                        $" Destination Country: {flight.DestinationCountry}," +
+                        $" Departure Date: {flight.DepartureDate}," +
+                        $" Departure Airport: {flight.DepartureAirport}," +
+                        $" Arrival Airport: {flight.ArrivalAirport}"
                     );
                 }
             }
@@ -276,7 +274,7 @@ public class AirportBookingSystem(
         {
             var filteredBookings = await bookingService.GetMatchingCriteriaAsync(criteria);
 
-            var bookingDtos = filteredBookings as BookingDto[] ?? filteredBookings.ToArray();
+            var bookingDtos = filteredBookings.ToList();
             if (bookingDtos.Any())
             {
                 Console.WriteLine("\nFiltered bookings:");
@@ -342,5 +340,5 @@ public class AirportBookingSystem(
         }
     }
 
-    #endregion
+    #endregion  
 }

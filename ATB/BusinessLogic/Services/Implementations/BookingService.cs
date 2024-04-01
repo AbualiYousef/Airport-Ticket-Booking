@@ -27,10 +27,10 @@ public class BookingService(
             throw new ArgumentException($"Flight with id {flightId} not found");
         }
 
-        // if (!(await IsClassAvailableToBook(flight, flightClass)))
-        // {
-        //     throw new ArgumentException($"Class {flightClass} not available for flight with id {flightId}");
-        // }
+        if (!(await IsClassAvailableToBook(flight, flightClass)))
+        {
+            throw new ArgumentException($"Class {flightClass} not available for flight with id {flightId}");
+        }
 
         var passenger = await passengerRepository.GetByIdAsync(passengerId);
         if (passenger == null)
@@ -83,7 +83,7 @@ public class BookingService(
         await bookingRepository.UpdateAsync(booking);
     }
 
-    public async Task<IEnumerable<BookingDto>> GetPassengerBookingsAsync(Guid passengerId)
+    public async Task<List<BookingDto>> GetPassengerBookingsAsync(Guid passengerId)
     {
         var passenger = await passengerRepository.GetByIdAsync(passengerId);
         if (passenger == null)
@@ -92,14 +92,14 @@ public class BookingService(
         }
 
         var bookings = await bookingRepository.GetPassengerBookingsAsync(passengerId);
-        return bookings.Select(b => new BookingDto(b));
+        return bookings.Select(b => new BookingDto(b)).ToList();
     }
 
 
-    public async Task<IEnumerable<BookingDto>> GetMatchingCriteriaAsync(BookingSearchCriteria criteria)
+    public async Task<List<BookingDto>> GetMatchingCriteriaAsync(BookingSearchCriteria criteria)
     {
         var bookingsMatchingCriteria = await bookingRepository.GetMatchingCriteriaAsync(criteria);
-        return bookingsMatchingCriteria.Select(b => new BookingDto(b));
+        return bookingsMatchingCriteria.Select(b => new BookingDto(b)).ToList();
     }
 
     private async Task<bool> IsClassAvailableToBook(Flight bookingFlight, FlightClass newClass)
