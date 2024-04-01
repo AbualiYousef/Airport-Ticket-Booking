@@ -11,5 +11,5 @@ public interface IBookingService
     Task CancelBooking(Guid bookingId);
     Task ModifyBooking(Guid bookingId, FlightClass newClass);
     Task<List<BookingDto>> GetPassengerBookingsAsync(Guid passengerId);
-    Task<List<BookingDto>> GetMatchingCriteriaAsync(BookingSearchCriteria criteria);
+    Task<List<BookingDto>> GetMatchingCriteriaAsync(BookingSearchCriteria? criteria);
 }

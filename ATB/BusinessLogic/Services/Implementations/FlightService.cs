@@ -17,11 +17,8 @@ public class FlightService(
 {
     public async Task<FlightDto> GetByIdAsync(Guid id)
     {
-        var flight = await flightRepository.GetByIdAsync(id);
-        if (flight == null)
-        {
-            throw new ArgumentException($"Flight with id {id} not found");
-        }
+        var flight = await flightRepository.GetByIdAsync(id) ??
+                     throw new ArgumentException($"Flight with id {id} not found");
 
         return new FlightDto(flight);
     }

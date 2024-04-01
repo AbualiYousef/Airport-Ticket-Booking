@@ -21,11 +21,8 @@ public class BookingService(
 
     public async Task BookFlight(Guid flightId, Guid passengerId, FlightClass flightClass)
     {
-        var flight = await flightRepository.GetByIdAsync(flightId);
-        if (flight == null)
-        {
-            throw new ArgumentException($"Flight with id {flightId} not found");
-        }
+        var flight = await flightRepository.GetByIdAsync(flightId) ??
+                     throw new ArgumentException($"Flight with id {flightId} not found");
 
         if (!(await IsClassAvailableToBook(flight, flightClass)))
         {
@@ -52,22 +49,16 @@ public class BookingService(
 
     public async Task CancelBooking(Guid bookingId)
     {
-        var booking = await bookingRepository.GetByIdAsync(bookingId);
-        if (booking == null)
-        {
-            throw new ArgumentException($"Booking with id {bookingId} not found");
-        }
+        var booking = await bookingRepository.GetByIdAsync(bookingId) ??
+                      throw new ArgumentException($"Booking with id {bookingId} not found");
 
         await bookingRepository.DeleteAsync(booking);
     }
 
     public async Task ModifyBooking(Guid bookingId, FlightClass newClass)
     {
-        var booking = await bookingRepository.GetByIdAsync(bookingId);
-        if (booking == null)
-        {
-            throw new ArgumentException($"Booking with id {bookingId} not found");
-        }
+        var booking = await bookingRepository.GetByIdAsync(bookingId) ??
+                      throw new ArgumentException($"Booking with id {bookingId} not found");
 
         if (booking.BookingClass == newClass)
         {
@@ -85,18 +76,15 @@ public class BookingService(
 
     public async Task<List<BookingDto>> GetPassengerBookingsAsync(Guid passengerId)
     {
-        var passenger = await passengerRepository.GetByIdAsync(passengerId);
-        if (passenger == null)
-        {
-            throw new ArgumentException($"Passenger with id {passengerId} not found");
-        }
-
+        var passenger = await passengerRepository.GetByIdAsync(passengerId) ??
+                        throw new ArgumentException($"Passenger with id {passengerId} not found");
+      
         var bookings = await bookingRepository.GetPassengerBookingsAsync(passengerId);
         return bookings.Select(b => new BookingDto(b)).ToList();
     }
 
 
-    public async Task<List<BookingDto>> GetMatchingCriteriaAsync(BookingSearchCriteria criteria)
+    public async Task<List<BookingDto>> GetMatchingCriteriaAsync(BookingSearchCriteria? criteria)
     {
         var bookingsMatchingCriteria = await bookingRepository.GetMatchingCriteriaAsync(criteria);
         return bookingsMatchingCriteria.Select(b => new BookingDto(b)).ToList();
@@ -107,19 +95,18 @@ public class BookingService(
         var classDetail = bookingFlight
             .ClassDetails
             .FirstOrDefault(details => details.Class == newClass);
-    
+
         if (classDetail == null)
         {
             return false;
         }
-    
+
         var capacity = classDetail.Capacity;
-    
+
         var bookings = await bookingRepository.GetBookingsForFlightWithClassAsync(bookingFlight.Id, newClass);
-    
+
         var bookedSeats = bookings.Count();
-    
+
         return capacity - bookedSeats > 0;
     }
-  
 }
