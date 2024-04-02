@@ -12,6 +12,7 @@
 
     <ItemGroup>
         <PackageReference Include="AutoFixture" Version="5.0.0-preview0010" />
+        <PackageReference Include="AutoFixture.AutoMoq" Version="5.0.0-preview0010" />
         <PackageReference Include="coverlet.collector" Version="6.0.0"/>
         <PackageReference Include="FluentAssertions" Version="7.0.0-alpha.3" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>

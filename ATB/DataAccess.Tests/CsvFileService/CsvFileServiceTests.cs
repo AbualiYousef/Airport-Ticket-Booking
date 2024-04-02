@@ -1,7 +1,7 @@
 using DataAccess.CsvHelperService;
 using FluentAssertions;
 
-namespace ATB.Tests;
+namespace ATB.Tests.CsvFileService;
 
 public class CsvFileServiceTests
 {
@@ -50,15 +50,17 @@ public class CsvFileServiceTests
 
     #region WriteToCsvAsync
 
-    [Fact]
-    public async Task WriteToCsvAsync_ValidData_ShouldWriteCorrectData()
+    [Theory]
+    [InlineData(1, "Yousef")]
+    [InlineData(2, "Test")]
+    public async Task WriteToCsvAsync_ValidData_ShouldWriteCorrectData(int a, string b)
     {
         var tempFilePath = Path.GetTempFileName();
         var csvFileService = new CsvFileService<TestData>();
         var data = new List<TestData>
         {
-            new TestData { Id = 1, Name = "Test 1" },
-            new TestData { Id = 2, Name = "Test 2" }
+            new TestData { Id = a, Name = b },
+            new TestData { Id = a, Name = b }
         };
 
         await csvFileService.WriteToCsvAsync(tempFilePath, data);

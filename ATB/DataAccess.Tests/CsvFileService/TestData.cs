@@ -1,4 +1,4 @@
-namespace ATB.Tests;
+namespace ATB.Tests.CsvFileService;
 
 public class TestData
 {
