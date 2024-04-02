@@ -1,0 +1,2 @@
+Id,DepartureCountry,DestinationCountry,DepartureDate,DepartureAirport,ArrivalAirport,ClassDetails
+b59c67bf-3d3e-4a15-aecb-388e6e5e6d91,USA,Canada,2024-05-15T14:30:00Z,JFK,YVR,"[{""Class"":""Economy"",""Price"":500,""Capacity"":150},{""Class"":""Business"",""Price"":1200,""Capacity"":50},{""Class"":""FirstClass"",""Price"":2500,""Capacity"":20}]"
