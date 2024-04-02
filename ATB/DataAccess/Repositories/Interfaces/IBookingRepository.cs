@@ -20,5 +20,5 @@ public interface IBookingRepository
 
     Task<List<Booking>> GetBookingsForFlightWithClassAsync(Guid flightId, FlightClass flightClass);
 
-    Task<List<Booking>> GetMatchingCriteriaAsync(BookingSearchCriteria criteria);
+    Task<List<Booking>> GetMatchingCriteriaAsync(BookingSearchCriteria? criteria);
 } 

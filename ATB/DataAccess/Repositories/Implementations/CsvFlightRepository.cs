@@ -11,10 +11,12 @@ public class CsvFlightRepository : IFlightRepository
     private readonly string _pathToCsv;
     private readonly ICsvFileService<Flight> _csvFileService;
     private ConcurrentDictionary<Guid, Flight> _flightsCache;
+    
     public CsvFlightRepository(ICsvFileService<Flight> csvFileService, string pathToCsv)
     {
         _csvFileService = csvFileService;
         _pathToCsv = pathToCsv;
+        InitializeCacheAsync().Wait(); 
     }
     public static async Task<CsvFlightRepository> CreateAsync(ICsvFileService<Flight> csvFileService, string pathToCsv)
     {
@@ -43,7 +45,6 @@ public class CsvFlightRepository : IFlightRepository
     public async Task AddAsync(IEnumerable<Flight> flights)
     {
         var flightsList = flights.ToList();
-        // Ensure atomicity by writing to the CSV before updating the cache.
         var updatedFlights = _flightsCache.Values.ToList();
         updatedFlights.AddRange(flightsList);
         await _csvFileService.WriteToCsvAsync(_pathToCsv, updatedFlights);

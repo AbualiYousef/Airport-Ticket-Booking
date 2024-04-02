@@ -12,11 +12,12 @@ public class CsvBookingRepository : IBookingRepository
     private readonly string _pathToCsv;
     private readonly ICsvFileService<Booking> _csvFileService;
     private ConcurrentDictionary<Guid, Booking> _bookingsCache;
-
+    
     public CsvBookingRepository(ICsvFileService<Booking> csvFileService, string pathToCsv)
     {
         _csvFileService = csvFileService;
         _pathToCsv = pathToCsv;
+        InitializeCacheAsync().Wait();
     }
 
     public static async Task<CsvBookingRepository> CreateAsync(ICsvFileService<Booking> csvFileService,
@@ -90,8 +91,12 @@ public class CsvBookingRepository : IBookingRepository
         return await Task.FromResult(bookings);
     }
 
-    public async Task<List<Booking>> GetMatchingCriteriaAsync(BookingSearchCriteria criteria)
+    public async Task<List<Booking>> GetMatchingCriteriaAsync(BookingSearchCriteria? criteria)
     {
+        if (criteria is null)
+        {
+            return await Task.FromResult(_bookingsCache.Values.ToList());
+        }
         var bookings = _bookingsCache.Values.Where(criteria.Matches).ToList();
         return await Task.FromResult(bookings);
     }

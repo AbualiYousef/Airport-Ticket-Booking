@@ -1,3 +1,5 @@
+namespace Presentation.InputUtilities;
+
 public static class InputParser
 {
     public delegate bool ParseFunc<TValue>(string input, out TValue value);
